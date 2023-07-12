@@ -1,12 +1,13 @@
-import { Suspense, lazy } from "react";
-import { Navigate, useRoutes } from "react-router-dom";
+import { Suspense, lazy } from 'react';
+import { Navigate, useRoutes } from 'react-router-dom';
 
 // layouts
-import DashboardLayout from "../layouts/dashboard";
+import DashboardLayout from '../layouts/dashboard';
+import MainLayout from '../layouts/main';
 
 // config
-import { DEFAULT_PATH } from "../config";
-import LoadingScreen from "../components/LoadingScreen";
+import { DEFAULT_PATH } from '../config';
+import LoadingScreen from '../components/LoadingScreen';
 
 const Loadable = (Component) => (props) => {
   return (
@@ -19,21 +20,29 @@ const Loadable = (Component) => (props) => {
 export default function Router() {
   return useRoutes([
     {
-      path: "/",
+      path: '/auth',
+      element: <MainLayout />,
+      children: [{ element: <LoginPage />, path: 'login' }],
+    },
+    {
+      path: '/',
       element: <DashboardLayout />,
       children: [
         { element: <Navigate to={DEFAULT_PATH} replace />, index: true },
-        { path: "app", element: <GeneralApp /> },
-        
-        { path: "404", element: <Page404 /> },
-        { path: "*", element: <Navigate to="/404" replace /> },
+        { path: 'app', element: <GeneralApp /> },
+        { path: 'settings', element: <Settings /> },
+        { path: '404', element: <Page404 /> },
+        { path: '*', element: <Navigate to='/404' replace /> },
       ],
     },
-    { path: "*", element: <Navigate to="/404" replace /> },
+    { path: '*', element: <Navigate to='/404' replace /> },
   ]);
 }
 
 const GeneralApp = Loadable(
-  lazy(() => import("../pages/dashboard/GeneralApp")),
+  lazy(() => import('../pages/dashboard/GeneralApp'))
 );
-const Page404 = Loadable(lazy(() => import("../pages/Page404")));
+const LoginPage = Loadable(lazy(() => import('../pages/auth/Login')));
+const Settings = Loadable(lazy(() => import('../pages/dashboard/Settings')));
+
+const Page404 = Loadable(lazy(() => import('../pages/Page404')));
